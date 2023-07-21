@@ -7,6 +7,10 @@ Main resource collection Repository for the talk called "From Metadata to Lakeho
 
 # Data Engineering assets
 For Microsoft Fabric assets please see the [**Fabric** folder](./assets/Fabric/)
+
 For Microsoft Azure Synapse Analytics assets please see the [**Synapse** folder](./assets/Synapse/)
+
 For the generic configuration database scripts please see the [**ConfigurationDatabase** folder](./assets/ConfigurationDatabase/)
+
+
 
