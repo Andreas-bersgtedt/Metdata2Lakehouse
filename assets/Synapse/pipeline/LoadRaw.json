@@ -1,0 +1,264 @@
+{
+	"name": "LoadRaw",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetSourceAssets",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@replace(concat('DECLARE @SFLTR AS VARCHAR(500) = ~',pipeline().parameters.Schema_Filter,'~\nDECLARE @TFLTR AS VARCHAR(500) = ~',pipeline().parameters.Table_Filter,'~\n\nDECLARE @sql AS VARCHAR(MAX)=\nREPLACE(~SELECT *,[sql]=¬SELECT * FROM [¬+TABLE_SCHEMA+¬].[¬+TABLE_NAME+¬]¬\n\t\t,[targetfolder]=LOWER(¬salesdata/¬+TABLE_SCHEMA+¬/¬+TABLE_NAME+¬/¬+CONVERT(VARCHAR(50),GETUTCDATE(),111))+¬/¬+LEFT(CONVERT(VARCHAR(50),CONVERT(TIME,GETUTCDATE())),2)\n\t\t,[storagecontainer]=¬bronze¬\n\t\t,[tablename]=¬[¬+TABLE_SCHEMA+¬].[¬+TABLE_NAME+¬]¬\n\t\t,[transactionid]=CONVERT(VARCHAR(100),NEWID())\n\t\t,[sourcesystem]=¬salesdata¬\nFROM /*INFORMATION_SCHEMA.TABLES*/ (select IST.TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,TABLE_TYPE,PK_COLS=ISNULL((STRING_AGG(C.name,¬!¬) WITHIN GROUP (ORDER BY column_id ASC)) ,¬¬)\nfrom INFORMATION_SCHEMA.TABLES IST\nINNER JOIN SYS.SCHEMAS S ON IST.TABLE_SCHEMA=S.name \nLEFT OUTER JOIN SYS.TABLES T  ON IST.TABLE_NAME=T.name and T.schema_id=S.schema_id\nLEFT OUTER JOIN SYS.COLUMNS C ON T.object_id=C.object_id and C.is_identity=1\nGROUP BY IST.TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,TABLE_TYPE\n) as X\nwhere TABLE_SCHEMA like ¬~+@SFLTR+~¬\nand TABLE_NAME like ¬~+@TFLTR+~¬~,~¬~,~~~~)\nEXEC(@sql)'),'~','''')",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SourceSQL",
+						"type": "DatasetReference",
+						"parameters": {
+							"kvuser": {
+								"value": "@pipeline().parameters.kvSecret",
+								"type": "Expression"
+							},
+							"sqluser": {
+								"value": "@pipeline().parameters.sqluser",
+								"type": "Expression"
+							},
+							"SQLFQDN": {
+								"value": "@pipeline().parameters.SQLFDQN",
+								"type": "Expression"
+							},
+							"dbname": {
+								"value": "@pipeline().parameters.dbname",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetSourceAssets",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetSourceAssets').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "Execute Pipeline1",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "SQL2Parquet",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"sql": {
+										"value": "@item().sql",
+										"type": "Expression"
+									},
+									"targetfolder": {
+										"value": "@item().targetfolder",
+										"type": "Expression"
+									},
+									"storagecontainer": {
+										"value": "@item().storagecontainer",
+										"type": "Expression"
+									},
+									"transactionid": {
+										"value": "@item().transactionid",
+										"type": "Expression"
+									},
+									"kvsecret": {
+										"value": "@pipeline().parameters.kvSecret",
+										"type": "Expression"
+									},
+									"sqluser": {
+										"value": "@pipeline().parameters.sqluser",
+										"type": "Expression"
+									},
+									"SQLFQDN": {
+										"value": "@pipeline().parameters.SQLFDQN",
+										"type": "Expression"
+									},
+									"dbname": {
+										"value": "@pipeline().parameters.dbname",
+										"type": "Expression"
+									},
+									"ADLSUrl": {
+										"value": "@pipeline().parameters.ADLSUrl",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Stored procedure1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Execute Pipeline1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[logs].[usp_add_datatransactionlogs]",
+								"storedProcedureParameters": {
+									"envitonment": {
+										"value": {
+											"value": "@pipeline().DataFactory",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"sourcesystem": {
+										"value": {
+											"value": "@item().sourcesystem",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"tablename": {
+										"value": {
+											"value": "@item().tablename",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"targetfolder": {
+										"value": {
+											"value": "@item().targetfolder",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"transactionid": {
+										"value": {
+											"value": "@item().transactionid",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"zone": {
+										"value": {
+											"value": "@item().storagecontainer",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"PK_COLS": {
+										"value": {
+											"value": "@item().PK_COLS",
+											"type": "Expression"
+										},
+										"type": "String"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "configurations_db",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"kvsecret": "<KeyVaultSecretName>",
+									"username": "<SQLUserName>",
+									"sqlFQDN": "<ServerName>.database.windows.net",
+									"dbname": "<DatabaseName>"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Execute Pipeline2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "LoadSilver",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"parameters": {
+			"Schema_Filter": {
+				"type": "string",
+				"defaultValue": "%SalesLT"
+			},
+			"Table_Filter": {
+				"type": "string",
+				"defaultValue": "%Cus%"
+			},
+			"SQLFDQN": {
+				"type": "string",
+				"defaultValue": "<ServerName>.database.windows.net"
+			},
+			"dbname": {
+				"type": "string",
+				"defaultValue": "<DatabaseName>"
+			},
+			"sqluser": {
+				"type": "string",
+				"defaultValue": "<SQLUserName>"
+			},
+			"kvSecret": {
+				"type": "string",
+				"defaultValue": "<KeyVaultSecretName>"
+			},
+			"ADLSUrl": {
+				"type": "string",
+				"defaultValue": "https://<StorageAccountName>.dfs.core.windows.net"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-07-18T19:13:50Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

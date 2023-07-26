@@ -1,0 +1,220 @@
+{
+	"name": "LoadSilver",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetReadyRawJobs",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat('SELECT * FROM [logs].[rawjobstogo] WHERE environment = ''',pipeline().DataFactory,'''')",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Configuration_db",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetReadyRawJobs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetReadyRawJobs').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Parquet2silver",
+							"type": "SynapseNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebook": {
+									"referenceName": "Gen-ParquetToSilver",
+									"type": "NotebookReference"
+								},
+								"parameters": {
+									"bronze_format": {
+										"value": {
+											"value": "@item().bronze_format",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"datasource": {
+										"value": {
+											"value": "@item().datasource",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"bronze_date_slize": {
+										"value": {
+											"value": "@item().bronze_date_slice",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"bronze_account_host_name": {
+										"value": {
+											"value": "@concat(item().bronze_account_name,'.dfs.core.windows.net')",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"silver_account_host_name": {
+										"value": {
+											"value": "@concat(item().silver_account_name,'.dfs.core.windows.net')",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"silver_container_name": {
+										"value": {
+											"value": "@item().silver_container_name",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"bronze_relative_path": {
+										"value": {
+											"value": "@item().bronze_relative_path",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"ListOfTables": {
+										"value": {
+											"value": "@item().ListOfTables",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"batch": {
+										"value": {
+											"value": "@item().batch",
+											"type": "Expression"
+										},
+										"type": "int"
+									},
+									"bronze_Path": {
+										"value": {
+											"value": "@item().bronze_Path",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"bronze_container_name": {
+										"value": {
+											"value": "@item().bronze_container_name",
+											"type": "Expression"
+										},
+										"type": "string"
+									},
+									"silver_relative_path": {
+										"value": {
+											"value": "@item().silver_relative_path",
+											"type": "Expression"
+										},
+										"type": "string"
+									}
+								},
+								"snapshot": true,
+								"sparkPool": {
+									"referenceName": "smlengcluster",
+									"type": "BigDataPoolReference"
+								},
+								"executorSize": "Small",
+								"conf": {
+									"spark.dynamicAllocation.enabled": true,
+									"spark.dynamicAllocation.minExecutors": 1,
+									"spark.dynamicAllocation.maxExecutors": 2
+								},
+								"driverSize": "Small",
+								"numExecutors": 1
+							}
+						},
+						{
+							"name": "Update batch Log",
+							"type": "Script",
+							"dependsOn": [
+								{
+									"activity": "Parquet2silver",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "configurations_db",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"kvsecret": "<KeyVaultSecretName>",
+									"username": "<SQLUserName>",
+									"sqlFQDN": "<ServerName>.database.windows.net",
+									"dbname": "<DatabaseName>"
+								}
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "Query",
+										"text": {
+											"value": "@concat('UPDATE \n  [logs].[datatransactionlogs]\n  SET is_processed=1\n  where ''',replace(item().ListOfTables,'''','#'),''' like ''','%','''+[transactionid]+''','%','''')",
+											"type": "Expression"
+										}
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-07-18T18:37:15Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

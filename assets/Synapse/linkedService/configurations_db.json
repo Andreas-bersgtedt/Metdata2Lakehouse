@@ -1,0 +1,44 @@
+{
+	"name": "configurations_db",
+	"properties": {
+		"parameters": {
+			"kvsecret": {
+				"type": "string",
+				"defaultValue": "<KeyVaultSecretName>"
+			},
+			"username": {
+				"type": "string",
+				"defaultValue": "<SQLServerUserName>"
+			},
+			"sqlFQDN": {
+				"type": "string",
+				"defaultValue": "<YourServerName>.database.windows.net"
+			},
+			"dbname": {
+				"type": "string",
+				"defaultValue": "<YourDBName>"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().sqlFQDN};Initial Catalog=@{linkedService().dbname};User ID=@{linkedService().username}",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "keyvault01",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": {
+					"value": "@linkedService().kvsecret",
+					"type": "Expression"
+				}
+			}
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/linkedservices"
+}

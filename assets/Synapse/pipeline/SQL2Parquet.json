@@ -1,0 +1,146 @@
+{
+	"name": "SQL2Parquet",
+	"properties": {
+		"activities": [
+			{
+				"name": "sqlscripttoparquet",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "load_process_transactionid",
+								"value": {
+									"value": "@pipeline().parameters.transactionid",
+									"type": "Expression"
+								}
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "@pipeline().parameters.sql",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings",
+							"maxRowsPerFile": 1000000
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceSQL",
+						"type": "DatasetReference",
+						"parameters": {
+							"kvuser": {
+								"value": "@pipeline().parameters.kvsecret",
+								"type": "Expression"
+							},
+							"sqluser": {
+								"value": "@pipeline().parameters.sqluser",
+								"type": "Expression"
+							},
+							"SQLFQDN": {
+								"value": "@pipeline().parameters.SQLFQDN",
+								"type": "Expression"
+							},
+							"dbname": {
+								"value": "@pipeline().parameters.dbname",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "adls",
+						"type": "DatasetReference",
+						"parameters": {
+							"fs": {
+								"value": "@pipeline().parameters.storagecontainer",
+								"type": "Expression"
+							},
+							"path": {
+								"value": "@pipeline().parameters.targetfolder",
+								"type": "Expression"
+							},
+							"ADLSURL": {
+								"value": "@pipeline().parameters.ADLSUrl",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"sql": {
+				"type": "string",
+				"defaultValue": "SELECT [AddressID]       ,[AddressLine1]       ,[AddressLine2]       ,[City]       ,[StateProvince]       ,[CountryRegion]       ,[PostalCode]       ,[rowguid]       ,[ModifiedDate]   FROM [SalesLT].[Address]"
+			},
+			"targetfolder": {
+				"type": "string",
+				"defaultValue": "salesdata/saleslt/address/2023/07/17"
+			},
+			"storagecontainer": {
+				"type": "string",
+				"defaultValue": "raw"
+			},
+			"transactionid": {
+				"type": "string",
+				"defaultValue": "dogfoodload"
+			},
+			"kvsecret": {
+				"type": "string",
+				"defaultValue": "<KeyVaultSecretName>"
+			},
+			"sqluser": {
+				"type": "string",
+				"defaultValue": "<SQLUserName>"
+			},
+			"SQLFQDN": {
+				"type": "string",
+				"defaultValue": "<ServerName>.database.windows.net"
+			},
+			"dbname": {
+				"type": "string",
+				"defaultValue": "<DatabaseName>"
+			},
+			"ADLSUrl": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Generic"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-07-17T11:30:51Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

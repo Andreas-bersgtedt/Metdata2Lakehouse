@@ -1,0 +1,44 @@
+{
+	"name": "adls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Lakehouse001",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"url": {
+					"value": "@dataset().ADLSURL",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"fs": {
+				"type": "string"
+			},
+			"path": {
+				"type": "string"
+			},
+			"ADLSURL": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@dataset().path",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().fs",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

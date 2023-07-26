@@ -1,0 +1,47 @@
+{
+	"name": "SourceSQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sourcesqldb",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"kvuser": {
+					"value": "@dataset().kvuser",
+					"type": "Expression"
+				},
+				"sqluser": {
+					"value": "@dataset().sqluser",
+					"type": "Expression"
+				},
+				"SQLFQDN": {
+					"value": "@dataset().SQLFQDN",
+					"type": "Expression"
+				},
+				"dbname": {
+					"value": "@dataset().dbname",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"kvuser": {
+				"type": "string"
+			},
+			"sqluser": {
+				"type": "string"
+			},
+			"SQLFQDN": {
+				"type": "string",
+				"defaultValue": "<SqlServerName>.database.windows.net"
+			},
+			"dbname": {
+				"type": "string",
+				"defaultValue": "<DatabaseName>"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

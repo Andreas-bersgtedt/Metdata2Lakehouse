@@ -1,0 +1,18 @@
+{
+	"name": "Configuration_db",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "configurations_db",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"kvsecret": "<KeyVaultSecretName>",
+				"username": "<SQLUserName>",
+				"sqlFQDN": "<SqlServer>.database.windows.net",
+				"dbname": "<DatabaseName>"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
