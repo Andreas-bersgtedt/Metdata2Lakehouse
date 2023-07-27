@@ -5,7 +5,14 @@
 			{
 				"name": "GetReadyRawJobs",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "GetDatafactory",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -18,7 +25,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "@concat('SELECT * FROM [logs].[rawjobstogo] WHERE environment = ''',pipeline().DataFactory,'''')",
+							"value": "@concat('SELECT * FROM [logs].[rawjobstogo] WHERE environment = ''',variables('datafactory'),'''')",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -26,7 +33,25 @@
 					},
 					"dataset": {
 						"referenceName": "Configuration_db",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"kvuser": {
+								"value": "@pipeline().parameters.config_kvsecret",
+								"type": "Expression"
+							},
+							"sqluser": {
+								"value": "@pipeline().parameters.config_username",
+								"type": "Expression"
+							},
+							"SQLFQDN": {
+								"value": "@pipeline().parameters.config_SQLFQDN",
+								"type": "Expression"
+							},
+							"dbname": {
+								"value": "@pipeline().parameters.config_dbname",
+								"type": "Expression"
+							}
+						}
 					},
 					"firstRowOnly": false
 				}
@@ -190,10 +215,22 @@
 								"referenceName": "configurations_db",
 								"type": "LinkedServiceReference",
 								"parameters": {
-									"kvsecret": "<KeyVaultSecretName>",
-									"username": "<SQLUserName>",
-									"sqlFQDN": "<ServerName>.database.windows.net",
-									"dbname": "<DatabaseName>"
+									"kvsecret": {
+										"value": "@pipeline().parameters.config_kvsecret",
+										"type": "Expression"
+									},
+									"username": {
+										"value": "@pipeline().parameters.config_username",
+										"type": "Expression"
+									},
+									"sqlFQDN": {
+										"value": "@pipeline().parameters.config_SQLFQDN",
+										"type": "Expression"
+									},
+									"dbname": {
+										"value": "@pipeline().parameters.config_dbname",
+										"type": "Expression"
+									}
 								}
 							},
 							"typeProperties": {
@@ -211,8 +248,45 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "GetDatafactory",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "datafactory",
+					"value": {
+						"value": "@pipeline().DataFactory",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"config_SQLFQDN": {
+				"type": "string"
+			},
+			"config_dbname": {
+				"type": "string"
+			},
+			"config_username": {
+				"type": "string"
+			},
+			"config_kvsecret": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"datafactory": {
+				"type": "String",
+				"defaultValue": "foo"
+			}
+		},
 		"annotations": [],
 		"lastPublishTime": "2023-07-18T18:37:15Z"
 	},

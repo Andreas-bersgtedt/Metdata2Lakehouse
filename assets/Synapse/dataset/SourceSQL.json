@@ -31,12 +31,10 @@
 				"type": "string"
 			},
 			"SQLFQDN": {
-				"type": "string",
-				"defaultValue": "<SqlServerName>.database.windows.net"
+				"type": "string"
 			},
 			"dbname": {
-				"type": "string",
-				"defaultValue": "<DatabaseName>"
+				"type": "string"
 			}
 		},
 		"annotations": [],

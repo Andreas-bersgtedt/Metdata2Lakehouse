@@ -113,24 +113,19 @@
 				"defaultValue": "raw"
 			},
 			"transactionid": {
-				"type": "string",
-				"defaultValue": "dogfoodload"
+				"type": "string"
 			},
 			"kvsecret": {
-				"type": "string",
-				"defaultValue": "<KeyVaultSecretName>"
+				"type": "string"
 			},
 			"sqluser": {
-				"type": "string",
-				"defaultValue": "<SQLUserName>"
+				"type": "string"
 			},
 			"SQLFQDN": {
-				"type": "string",
-				"defaultValue": "<ServerName>.database.windows.net"
+				"type": "string"
 			},
 			"dbname": {
-				"type": "string",
-				"defaultValue": "<DatabaseName>"
+				"type": "string"
 			},
 			"ADLSUrl": {
 				"type": "string"

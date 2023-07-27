@@ -196,10 +196,22 @@
 								"referenceName": "configurations_db",
 								"type": "LinkedServiceReference",
 								"parameters": {
-									"kvsecret": "<KeyVaultSecretName>",
-									"username": "<SQLUserName>",
-									"sqlFQDN": "<ServerName>.database.windows.net",
-									"dbname": "<DatabaseName>"
+									"kvsecret": {
+										"value": "@pipeline().parameters.config_kvSecret",
+										"type": "Expression"
+									},
+									"username": {
+										"value": "@pipeline().parameters.config_sqluser",
+										"type": "Expression"
+									},
+									"sqlFQDN": {
+										"value": "@pipeline().parameters.config_SQLFDQN",
+										"type": "Expression"
+									},
+									"dbname": {
+										"value": "@pipeline().parameters.config_dbname",
+										"type": "Expression"
+									}
 								}
 							}
 						}
@@ -223,7 +235,25 @@
 						"referenceName": "LoadSilver",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"config_SQLFQDN": {
+							"value": "@pipeline().parameters.config_SQLFDQN",
+							"type": "Expression"
+						},
+						"config_dbname": {
+							"value": "@pipeline().parameters.config_dbname",
+							"type": "Expression"
+						},
+						"config_username": {
+							"value": "@pipeline().parameters.config_sqluser",
+							"type": "Expression"
+						},
+						"config_kvsecret": {
+							"value": "@pipeline().parameters.config_kvSecret",
+							"type": "Expression"
+						}
+					}
 				}
 			}
 		],
@@ -234,27 +264,43 @@
 			},
 			"Table_Filter": {
 				"type": "string",
-				"defaultValue": "%Cus%"
+				"defaultValue": "%"
 			},
 			"SQLFDQN": {
 				"type": "string",
-				"defaultValue": "<ServerName>.database.windows.net"
+				"defaultValue": "<YourSourceServerName>.database.windows.net"
 			},
 			"dbname": {
 				"type": "string",
-				"defaultValue": "<DatabaseName>"
+				"defaultValue": "<SourceDatabase>"
 			},
 			"sqluser": {
 				"type": "string",
-				"defaultValue": "<SQLUserName>"
+				"defaultValue": "<SourceSQLUser>"
 			},
 			"kvSecret": {
 				"type": "string",
-				"defaultValue": "<KeyVaultSecretName>"
+				"defaultValue": "<SourceSQLKVSecret>"
 			},
 			"ADLSUrl": {
 				"type": "string",
-				"defaultValue": "https://<StorageAccountName>.dfs.core.windows.net"
+				"defaultValue": "https://<YourADLSTargetAccount>.dfs.core.windows.net"
+			},
+			"config_SQLFDQN": {
+				"type": "string",
+				"defaultValue": "<ConfigDBSQLServer>.database.windows.net"
+			},
+			"config_dbname": {
+				"type": "string",
+				"defaultValue": "<ConfigDatabase>"
+			},
+			"config_sqluser": {
+				"type": "string",
+				"defaultValue": "<ConfigSQLServerUserName>"
+			},
+			"config_kvSecret": {
+				"type": "string",
+				"defaultValue": "<ConfigSQLKVSecret>"
 			}
 		},
 		"annotations": [],

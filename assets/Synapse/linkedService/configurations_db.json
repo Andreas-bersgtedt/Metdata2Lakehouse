@@ -3,20 +3,16 @@
 	"properties": {
 		"parameters": {
 			"kvsecret": {
-				"type": "string",
-				"defaultValue": "<KeyVaultSecretName>"
+				"type": "string"
 			},
 			"username": {
-				"type": "string",
-				"defaultValue": "<SQLServerUserName>"
+				"type": "string"
 			},
 			"sqlFQDN": {
-				"type": "string",
-				"defaultValue": "<YourServerName>.database.windows.net"
+				"type": "string"
 			},
 			"dbname": {
-				"type": "string",
-				"defaultValue": "<YourDBName>"
+				"type": "string"
 			}
 		},
 		"annotations": [],

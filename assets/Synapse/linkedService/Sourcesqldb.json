@@ -9,12 +9,10 @@
 				"type": "string"
 			},
 			"SQLFQDN": {
-				"type": "string",
-				"defaultValue": "<SQLServerName>.database.windows.net"
+				"type": "string"
 			},
 			"dbname": {
-				"type": "string",
-				"defaultValue": "<DatabaseNAme>"
+				"type": "string"
 			}
 		},
 		"annotations": [],

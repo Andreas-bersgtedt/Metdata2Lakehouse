@@ -1,14 +1,41 @@
 {
 	"name": "Configuration_db",
 	"properties": {
+		"description": "This is the baseline config database dataset",
 		"linkedServiceName": {
 			"referenceName": "configurations_db",
 			"type": "LinkedServiceReference",
 			"parameters": {
-				"kvsecret": "<KeyVaultSecretName>",
-				"username": "<SQLUserName>",
-				"sqlFQDN": "<SqlServer>.database.windows.net",
-				"dbname": "<DatabaseName>"
+				"kvsecret": {
+					"value": "@dataset().kvuser",
+					"type": "Expression"
+				},
+				"username": {
+					"value": "@dataset().sqluser",
+					"type": "Expression"
+				},
+				"sqlFQDN": {
+					"value": "@dataset().SQLFQDN",
+					"type": "Expression"
+				},
+				"dbname": {
+					"value": "@dataset().dbname",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"kvuser": {
+				"type": "string"
+			},
+			"sqluser": {
+				"type": "string"
+			},
+			"SQLFQDN": {
+				"type": "string"
+			},
+			"dbname": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
