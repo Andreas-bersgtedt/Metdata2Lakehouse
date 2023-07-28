@@ -115,14 +115,14 @@
 									},
 									"bronze_account_host_name": {
 										"value": {
-											"value": "@concat(item().bronze_account_name,'.dfs.core.windows.net')",
+											"value": "@item().bronze_account_name",
 											"type": "Expression"
 										},
 										"type": "string"
 									},
 									"silver_account_host_name": {
 										"value": {
-											"value": "@concat(item().silver_account_name,'.dfs.core.windows.net')",
+											"value": "@item().silver_account_name",
 											"type": "Expression"
 										},
 										"type": "string"

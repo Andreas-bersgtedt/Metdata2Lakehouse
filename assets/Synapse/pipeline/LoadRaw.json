@@ -189,6 +189,13 @@
 											"type": "Expression"
 										},
 										"type": "String"
+									},
+									"targethost": {
+										"value": {
+											"value": "@pipeline().parameters.ADLSUrl",
+											"type": "Expression"
+										},
+										"type": "String"
 									}
 								}
 							},
@@ -268,11 +275,11 @@
 			},
 			"SQLFDQN": {
 				"type": "string",
-				"defaultValue": "<YourSourceServerName>.database.windows.net"
+				"defaultValue": "<SourceSQLServer>.database.windows.net"
 			},
 			"dbname": {
 				"type": "string",
-				"defaultValue": "<SourceDatabase>"
+				"defaultValue": "<SourceDBName>"
 			},
 			"sqluser": {
 				"type": "string",
@@ -280,27 +287,27 @@
 			},
 			"kvSecret": {
 				"type": "string",
-				"defaultValue": "<SourceSQLKVSecret>"
+				"defaultValue": "<SourceKVSecret>"
 			},
 			"ADLSUrl": {
 				"type": "string",
-				"defaultValue": "https://<YourADLSTargetAccount>.dfs.core.windows.net"
+				"defaultValue": "https://<ADLSAccount>.dfs.core.windows.net"
 			},
 			"config_SQLFDQN": {
 				"type": "string",
-				"defaultValue": "<ConfigDBSQLServer>.database.windows.net"
+				"defaultValue": "<SQLServer>.database.windows.net"
 			},
 			"config_dbname": {
 				"type": "string",
-				"defaultValue": "<ConfigDatabase>"
+				"defaultValue": "<ConfigurationDBName>"
 			},
 			"config_sqluser": {
 				"type": "string",
-				"defaultValue": "<ConfigSQLServerUserName>"
+				"defaultValue": "<ConfigurationSQLUser>"
 			},
 			"config_kvSecret": {
 				"type": "string",
-				"defaultValue": "<ConfigSQLKVSecret>"
+				"defaultValue": "<ConfigurationKVSecret>"
 			}
 		},
 		"annotations": [],
