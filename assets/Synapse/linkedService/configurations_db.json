@@ -13,6 +13,9 @@
 			},
 			"dbname": {
 				"type": "string"
+			},
+			"KeyVaultURL": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -23,7 +26,13 @@
 				"type": "AzureKeyVaultSecret",
 				"store": {
 					"referenceName": "keyvault01",
-					"type": "LinkedServiceReference"
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"KeyVaultURL": {
+							"value": "@linkedService().KeyVaultURL",
+							"type": "Expression"
+						}
+					}
 				},
 				"secretName": {
 					"value": "@linkedService().kvsecret",
