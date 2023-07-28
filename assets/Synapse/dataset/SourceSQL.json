@@ -20,6 +20,10 @@
 				"dbname": {
 					"value": "@dataset().dbname",
 					"type": "Expression"
+				},
+				"KeyVaultURL": {
+					"value": "@dataset().KeyVaultURL",
+					"type": "Expression"
 				}
 			}
 		},
@@ -34,6 +38,9 @@
 				"type": "string"
 			},
 			"dbname": {
+				"type": "string"
+			},
+			"KeyVaultURL": {
 				"type": "string"
 			}
 		},

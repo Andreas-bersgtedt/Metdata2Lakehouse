@@ -50,6 +50,10 @@
 							"dbname": {
 								"value": "@pipeline().parameters.config_dbname",
 								"type": "Expression"
+							},
+							"KeyVaultURL": {
+								"value": "@pipeline().parameters.KeyVaultURL",
+								"type": "Expression"
 							}
 						}
 					},
@@ -230,6 +234,10 @@
 									"dbname": {
 										"value": "@pipeline().parameters.config_dbname",
 										"type": "Expression"
+									},
+									"KeyVaultURL": {
+										"value": "@pipeline().parameters.KeyVaultURL",
+										"type": "Expression"
 									}
 								}
 							},
@@ -278,6 +286,9 @@
 				"type": "string"
 			},
 			"config_kvsecret": {
+				"type": "string"
+			},
+			"KeyVaultURL": {
 				"type": "string"
 			}
 		},

@@ -73,6 +73,10 @@
 							"dbname": {
 								"value": "@pipeline().parameters.dbname",
 								"type": "Expression"
+							},
+							"KeyVaultURL": {
+								"value": "@pipeline().parameters.KeyVaultURL",
+								"type": "Expression"
 							}
 						}
 					}
@@ -128,6 +132,9 @@
 				"type": "string"
 			},
 			"ADLSUrl": {
+				"type": "string"
+			},
+			"KeyVaultURL": {
 				"type": "string"
 			}
 		},

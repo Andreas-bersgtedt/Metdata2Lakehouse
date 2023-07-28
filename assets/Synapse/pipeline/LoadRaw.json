@@ -43,6 +43,10 @@
 							"dbname": {
 								"value": "@pipeline().parameters.dbname",
 								"type": "Expression"
+							},
+							"KeyVaultURL": {
+								"value": "@pipeline().parameters.KeyVaultURL",
+								"type": "Expression"
 							}
 						}
 					},
@@ -114,6 +118,10 @@
 									},
 									"ADLSUrl": {
 										"value": "@pipeline().parameters.ADLSUrl",
+										"type": "Expression"
+									},
+									"KeyVaultURL": {
+										"value": "@pipeline().parameters.KeyVaultURL",
 										"type": "Expression"
 									}
 								}
@@ -218,6 +226,10 @@
 									"dbname": {
 										"value": "@pipeline().parameters.config_dbname",
 										"type": "Expression"
+									},
+									"KeyVaultURL": {
+										"value": "@pipeline().parameters.KeyVaultURL",
+										"type": "Expression"
 									}
 								}
 							}
@@ -271,43 +283,46 @@
 			},
 			"Table_Filter": {
 				"type": "string",
-				"defaultValue": "%"
+				"defaultValue": "%Cus%"
 			},
 			"SQLFDQN": {
 				"type": "string",
-				"defaultValue": "<SourceSQLServer>.database.windows.net"
+				"defaultValue": "<SomeSQLSRVR>.database.windows.net"
 			},
 			"dbname": {
 				"type": "string",
-				"defaultValue": "<SourceDBName>"
+				"defaultValue": "<SourceSQLDB>"
 			},
 			"sqluser": {
 				"type": "string",
-				"defaultValue": "<SourceSQLUser>"
+				"defaultValue": "<Username>"
 			},
 			"kvSecret": {
 				"type": "string",
-				"defaultValue": "<SourceKVSecret>"
+				"defaultValue": "KVSecret"
 			},
 			"ADLSUrl": {
 				"type": "string",
-				"defaultValue": "https://<ADLSAccount>.dfs.core.windows.net"
+				"defaultValue": "https://<StorageAccount>.dfs.core.windows.net"
 			},
 			"config_SQLFDQN": {
 				"type": "string",
-				"defaultValue": "<SQLServer>.database.windows.net"
+				"defaultValue": "<SomeSQLSRVR>.database.windows.net"
 			},
 			"config_dbname": {
 				"type": "string",
-				"defaultValue": "<ConfigurationDBName>"
+				"defaultValue": "configurations_db"
 			},
 			"config_sqluser": {
 				"type": "string",
-				"defaultValue": "<ConfigurationSQLUser>"
+				"defaultValue": "<ConfigUserName>"
 			},
 			"config_kvSecret": {
 				"type": "string",
-				"defaultValue": "<ConfigurationKVSecret>"
+				"defaultValue": "<ConfigKVSecret>"
+			},
+			"KeyVaultURL": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
