@@ -1,3 +1,3 @@
-## Assets Folder
+# Assets Folder
 
 This folder contain the main asset library.
